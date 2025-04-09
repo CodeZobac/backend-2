@@ -451,3 +451,376 @@ class Item(models.Model):
 
 - Problem: Develop a full test suite for a Django REST API endpoint (e.g., listing BlogPosts) using pytest fixtures and parametrization.
     - Hint: Create fixtures for BlogPost objects and test the API response structure.
+
+
+## Session 10: Enhancing Security in Python Applications
+
+**Goal:**
+Learn techniques to secure Python web applications against common vulnerabilities.
+
+**Definition:**
+Security in Python involves applying best practices to prevent attacks such as SQL injection, XSS, CSRF, and more. It includes validating user input, using secure authentication methods, and implementing proper error handling. These measures are critical in protecting sensitive data and maintaining user trust in web applications.
+
+**Documentation Reference:**
+
+- https://owasp.org/www-project-top-ten/
+- https://docs.djangoproject.com/en/3.2/topics/security/
+- https://fastapi.tiangolo.com/advanced/security/
+
+**Tutorial:**
+
+- Step-by-Step Example:
+
+    - Discuss common vulnerabilities and secure coding practices.
+    - Implement a FastAPI endpoint that uses JWT for authentication.
+```py
+    from fastapi import FastAPI, Depends, HTTPException
+    from fastapi.security import OAuth2PasswordBearer
+    from jose import JWTError, jwt
+
+    app = FastAPI()
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+    SECRET_KEY = "your-secret-key"
+
+    def verify_token(token: str = Depends(oauth2_scheme)):
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            return payload
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+    @app.get("/secure-data")
+    async def secure_data(user=Depends(verify_token)):
+        return {"data": "Secure Information"}
+```
+- Explanation: This endpoint only returns data when a valid JWT token is provided.
+
+### Exercise:
+
+- Problem: Create a FastAPI endpoint that accepts user input, sanitises it, and returns a safe response.
+    - Steps to Solve:
+        - Define an endpoint that accepts query parameters.
+        - Apply input validation and sanitisation.
+
+### Challenge:
+
+- Problem: Secure a Django application by implementing comprehensive security measures: CSRF protection, secure session management, and input validation.
+    - Hint: Use Django’s built-in security middleware and forms.
+
+## Session 11: Building GraphQL APIs with Python
+
+**Goal:**
+Learn to design and implement a GraphQL API in Python for flexible client data queries.
+
+**Definition:**
+GraphQL is a query language that allows clients to request exactly the data they need. In Python, libraries like Strawberry and Graphene simplify building GraphQL APIs. Use cases include mobile and web applications that require efficient and customisable data fetching.
+
+**Documentation Reference:
+
+- https://graphql.org/learn/
+- https://graphene-python.org/
+- https://strawberry.rocks/docs/
+
+**Tutorial:**
+- Step-by-Step Example:
+
+        Install Strawberry:
+```bash
+pip install strawberry-graphql
+```
+- Define types and resolvers.
+
+```py
+    import strawberry
+    from fastapi import FastAPI
+    from strawberry.asgi import GraphQL
+
+    @strawberry.type
+    class User:
+        id: int
+        name: str
+
+    @strawberry.type
+    class Query:
+        @strawberry.field
+        def user(self, id: int) -> User:
+            return User(id=id, name="John Doe")
+
+    schema = strawberry.Schema(query=Query)
+    graphql_app = GraphQL(schema)
+
+    app = FastAPI()
+    app.add_route("/graphql", graphql_app)
+```
+- Explanation: This creates a GraphQL endpoint at /graphql where clients can query for user data.
+
+### Exercise:
+
+Problem: Create a simple GraphQL API that allows querying and updating a user’s name.
+
+- Steps to Solve: Extend the schema to include a mutation for updating the user’s name.
+
+### Challenge:
+
+Problem: Implement a GraphQL API that supports nested queries and authenticated mutations.
+    - Hint: Integrate an authentication check in the resolver.
+
+## Session 12: Developing gRPC Services in Python
+
+**Goal:**
+Learn to build and consume gRPC services for efficient inter-service communication.
+
+**Definition:**
+gRPC is a high-performance RPC framework that uses Protocol Buffers for data serialization. It facilitates fast communication between microservices. Use cases include real-time data streaming, cross-language services, and distributed systems.
+
+**Documentation Reference:**
+
+- https://grpc.io/docs/languages/python/quickstart/
+- https://docs.python.org/3/library/concurrent.futures.html
+- https://realpython.com/python-grpc/
+
+**Tutorial:**
+- Step-by-Step Example:
+    - Define a simple .proto file.
+    ```proto
+    syntax = "proto3";
+    package service;
+
+    service Greeter {
+        rpc SayHello (HelloRequest) returns (HelloReply) {}
+    }
+    message HelloRequest {
+        string name = 1;
+    }
+    message HelloReply {
+        string message = 1;
+    }
+    ```
+    - Generate Python code using grpcio-tools.
+    ```bash
+    pip install grpcio-tools
+    ```
+    ```bash
+    python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. service.proto
+    ```
+    - Implement a server and client.
+    ```bash
+    pip install grpcio
+    ```
+    ```py
+    from concurrent import futures
+    import grpc
+    import service_pb2
+    import service_pb2_grpc
+
+    class Greeter(service_pb2_grpc.GreeterServicer):
+        def SayHello(self, request, context):
+            return service_pb2.HelloReply(message=f"Hello, {request.name}!")
+
+    def serve():
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        service_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
+        server.add_insecure_port('[::]:50051')
+        server.start()
+        server.wait_for_termination()
+
+    if __name__ == "__main__":
+        serve()
+    ``` 
+### Exercise:
+
+- Problem: Build a basic gRPC service that returns the cube of a number.
+    - Steps to Solve:
+        -  Define the .proto file, generate code, and implement the server and client.
+
+## Challenge:
+
+- Problem:
+    - Create a gRPC service that supports server-side streaming to send multiple messages for a single request.
+        - Hint: Modify the .proto definition to use a stream for the response.
+
+## Session 13: Python Web Development Best Practices with Django and FastAPI
+
+**Goal:**
+Learn how to structure and optimise web applications using Django and FastAPI effectively.
+
+**Definition:**
+Web development best practices include clear code organisation, proper error handling, security measures, and performance optimisation. By following framework-specific guidelines and industry standards, you ensure scalable and maintainable code. This session compares Django’s monolithic approach with FastAPI’s asynchronous design, highlighting key strategies for each.
+
+**Documentation Reference:**
+
+- https://docs.djangoproject.com/en/3.2/
+- https://fastapi.tiangolo.com/
+- https://realpython.com/django-best-practices/
+
+**Tutorial:**
+
+- Step-by-Step Example:
+    - Create a simple Django project and a FastAPI app.
+    - Highlight differences in project structure, middleware usage, and error handling.
+
+```py
+# Django: views.py example
+from django.http import JsonResponse
+
+def index(request):
+    return JsonResponse({"message": "Hello from Django"})
+
+    # FastAPI: main.py example
+    from fastapi import FastAPI
+
+    app = FastAPI()
+
+    @app.get("/")
+    async def index():
+        return {"message": "Hello from FastAPI"}
+```
+
+### Exercise:
+
+- Problem: Create a minimal Django project and a FastAPI application that serve a simple "Hello World" endpoint following best practices.
+    - Steps to Solve:
+        - Set up both projects with proper directory structure.
+        - Implement and test the endpoints.
+
+### Challenge:
+
+- Problem: Refactor an existing web application to improve error handling, logging, and performance optimisation.
+    - Hint: Consider integrating middleware and asynchronous processing where possible.
+
+## Session 14: Introduction to AI Agents in Python with CrewAI
+
+**Goal:**
+Learn the basics of building AI agents using the CrewAI framework to automate tasks and respond intelligently.
+
+**Definition:**
+AI agents are autonomous software components that perform tasks based on user input or environmental data. CrewAI simplifies the creation of such agents by providing pre-built modules for conversation, decision-making, and integration with external services. Use cases include chatbots, automated customer support, and data analysis assistants.
+
+**Documentation Reference:**
+
+- https://crew.ai/docs
+- https://github.com/crew-ai/crewai-python
+- https://en.wikipedia.org/wiki/Intelligent_agent
+
+**Tutorial:**
+- Step-by-Step Example:
+    - Install CrewAI (follow the documentation).
+    - Create a simple AI agent that responds to a fixed query.
+```py
+    # Example pseudocode using CrewAI
+    from crewai import Agent
+
+    agent = Agent(name="SimpleAgent")
+    response = agent.respond("Hello")
+    print(response)
+```
+- Explanation: This example demonstrates initializing an agent and obtaining a response.
+
+### Exercise:
+
+- Problem: Build a simple AI agent that returns a predefined message when given a specific input.
+    - Steps to Solve:
+        - Initialise the agent.
+        - Define a response logic for a specific query.
+
+### Challenge:
+
+- Problem: Enhance the agent to handle multiple queries with different responses based on keywords.
+    - Hint: Use conditional statements or a mapping dictionary.
+
+## Session 15: Advanced AI Agent Development with CrewAI
+
+**Goal:**
+Deepen your knowledge in AI agent development by integrating state management and external API data into CrewAI agents.
+
+**Definition:**
+Advanced AI agents not only respond to queries but also maintain context and learn from interactions. Integrating state management and external API calls allows agents to deliver dynamic, personalised responses. Use cases include chatbots that track user history and recommendation engines that adjust responses based on real-time data.
+
+**Documentation Reference:**
+
+- https://crew.ai/docs/advanced
+- https://github.com/crew-ai/crewai-python
+- https://en.wikipedia.org/wiki/Artificial_intelligence
+
+**Tutorial:**
+- Step-by-Step Example:
+    - Extend the basic agent to store conversation history.
+    ```py
+    from crewai import Agent
+
+    class StatefulAgent(Agent):
+        def __init__(self, name):
+            super().__init__(name)
+            self.history = []
+
+        def respond(self, query):
+            self.history.append(query)
+            if query.lower() == "history":
+                return f"Your queries: {', '.join(self.history)}"
+            return f"Echo: {query}"
+
+    agent = StatefulAgent("StatefulAgent")
+    print(agent.respond(query="query"))
+    ```
+- Explanation: This agent keeps track of previous queries and can respond with the history.
+
+### Exercise
+
+- Problem: Create an AI agent that fetches real-time weather data from an external API and responds with the current temperature.
+    - Steps to Solve:
+        - Integrate an API call within the agent’s response logic.
+
+### Challenge
+
+- Problem: Develop an AI agent that can handle complex queries and respond with relevant information, possibly using external APIs for data enrichment.
+    - Hint: Implement a more sophisticated response logic that can parse and respond to structured queries.
+
+## Session 16: Building CI/CD Pipelines for Python Projects with GitHub Actions
+
+**Goal:**
+Learn how to automate testing, building, and deploying your Python projects using GitHub Actions.
+
+**Definition:**
+CI/CD stands for Continuous Integration and Continuous Deployment. It automates testing and deployment so that every code change is verified and delivered seamlessly. In Python projects, CI/CD pipelines help run tests (using pytest), build the application, and deploy to a target environment without manual intervention. This process reduces errors and accelerates development cycles.
+
+**Documentation Reference:**
+
+- https://docs.github.com/en/actions
+- https://docs.github.com/en/actions/learn-github-actions/introduction-to-github-actions
+- https://docs.pytest.org/en/stable/
+
+**Tutorial:**
+
+- Create Workflow Directory: In your repository, create a folder named .github/workflows.
+- Create Workflow File: Add a file named ci.yml with the following content:
+```yaml
+    name: CI Pipeline
+    on: [push, pull_request]
+    jobs:
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+          - name: Set up Python
+            uses: actions/setup-python@v2
+            with:
+              python-version: '3.9'
+          - name: Install dependencies
+            run: |
+              pip install pytest
+              pip install -r requirements.txt
+          - name: Run tests
+            run: pytest
+```
+- Commit and Push: Commit the file and push to GitHub to trigger the workflow. Explanation: This workflow checks out your code, sets up Python, installs dependencies, and runs tests using pytest.
+
+### Exercise:
+
+- Problem: Create a GitHub Actions workflow that tests your project on multiple Python versions.
+    - Steps to Solve: Modify the YAML file to include a matrix strategy for Python versions.
+
+### Challenge:
+
+- Problem: Extend the CI/CD pipeline to include a deployment step that runs only when code is pushed to the main branch.
+    - Hint: Use conditional steps and job dependencies.
