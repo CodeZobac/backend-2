@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "aula-14"
+version = "0.1.0"
+description = "Session 14: Introduction to AI Agents with CrewAI"
+authors = ["Student <student@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+crewai = "^0.28.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

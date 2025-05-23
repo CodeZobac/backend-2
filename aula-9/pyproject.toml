@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "aula-9"
+version = "0.1.0"
+description = "Session 9: Advanced Testing Strategies in Django using pytest"
+authors = ["Student <student@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "^4.2.7"
+pytest = "^7.4.3"
+pytest-django = "^4.7.0"
+djangorestframework = "^3.14.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "aula-3-threading"
+version = "0.1.0"
+description = "Python Threading and Concurrent Programming"
+authors = ["Backend Course <backend@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0.0"
+black = "^23.0.0"
+flake8 = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
